@@ -1,13 +1,10 @@
+import time
+
 import AppKit
 import pyautogui
-import time
 import pyperclip
 
 height, width = pyautogui.size()
-
-# while True:
-#     time.sleep(1)
-#     print(pyautogui.position())
 
 """
 動画を再生したタイミングでこの機能を利用する
@@ -18,16 +15,17 @@ while True:
     time.sleep(1)
     # CMの場合を検知する
     try:
-        if pyautogui.locateCenterOnScreen('./img/skip.png',confidence=.6):
-            print("「広告をスキップ」を認識しました")
-
+        if pyautogui.locateCenterOnScreen('./img/skip.png', confidence=0.6):
+            print('「広告をスキップ」を認識しました')
+            
             """
-            「広告をスキップ」を検知したら、動画を止める
+            「広告をスキップ」を検知したら、動画を止める            
             """
             imgX, imgY = pyautogui.locateCenterOnScreen('./img/skip.png',confidence=.6)
             pyautogui.moveTo(imgX/2, imgY/2 - (height / 10), duration=0.1)
+            # chromeをアクティブウィンドウにする
             pyautogui.click()
-            # pyautogui.click()
+            # 動画を止める
             pyautogui.hotkey('k')
 
             """
@@ -36,11 +34,11 @@ while True:
             pyautogui.rightClick()
             # 詳細統計情報の位置を取得
             imgX, imgY = pyautogui.locateCenterOnScreen('./img/detailInfo.png', confidence=.6)
-            print("詳細k統計情報を認識しました")
+            print('詳細統計情報を認識しました')
             pyautogui.moveTo(imgX/2, imgY/2, duration=0.1)
             # 詳細統計情報をクリック
             pyautogui.click()
-            pyautogui.hotkey("command","option",'j')
+            pyautogui.hotkey('ctrl','shift','j')
             time.sleep(1)
 
             # JavascriptでVideoIDをクリップボードに保存する処理
@@ -56,43 +54,44 @@ while True:
 
             time.sleep(2)
             # ブラウザの開発ツールのコンソールにjavascriptを1行ずつ入力する処理
-            for l in copyFuncList:
-                print(l)
-                pyperclip.copy(l)
-                pyautogui.hotkey('command','v')
+            for line in copyFuncList:
+                print(line)
+                pyperclip.copy(line)
+                pyautogui.hotkey('ctrl','v')
                 time.sleep(0.5)
             pyautogui.hotkey('enter')
             
             """
             cmIDを取得する
             """
+            # この段階でクリップボードにcmIDが入っている
             cmID = pyperclip.paste()
-            cmID = cmID.strip(" ").split('/')[0]
+            cmID = cmID.split(' ')[0]
             print(cmID)
-
 
 
             """
             コンソールを閉じる
             """
-            pyautogui.hotkey("command","option",'j')
+            pyautogui.hotkey('ctrl','shift','j')
 
             """
             広告のリンクを取得する
             """
             pyautogui.moveTo(192, 518, duration=0.1)
             pyautogui.click()
-            pyautogui.hotkey("command", 'l')
-            pyautogui.hotkey("command", "c")
+            pyautogui.hotkey('ctrl', 'l')
+            pyautogui.hotkey('ctrl', 'c')
             cmURL = pyperclip.paste()
             print(cmURL)
-            pyautogui.hotkey("command", "w")
+            # タブを閉じる
+            pyautogui.hotkey('ctrl', 'w')
             
             """
             cmIDと広告リンクをcm.csvに格納する
             """
-            with open("./cm.csv", "a") as f:
-                f.writelines("{},{}".format(cmID, cmURL))
+            with open('./cm.csv', 'a') as f:
+                f.writelines('{0},{1}'.format(cmID, cmURL))
 
             """
             広告をスキップを押下
@@ -104,4 +103,3 @@ while True:
 
     except Exception as e:
         print(e)
-        continue
