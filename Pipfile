@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[scripts]
+start = "python Main.py"
+
+[packages]
+pyautogui = "*"
+pyperclip = "*"
+opencv-python = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
